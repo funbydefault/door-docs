@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Door 1.0 - FunByDefault Guide</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --night: #101416;
+      --night-soft: #151d20;
+      --panel: #1b2529;
+      --panel-raised: #223137;
+      --line: #3a5058;
+      --text: #eef4f2;
+      --muted: #b7c6c4;
+      --amber: #ffae2b;
+      --amber-soft: #4a3416;
+      --teal: #51c9d5;
+      --teal-soft: #163e44;
+      --green: #79d49b;
+      --danger: #ff9a8f;
+      --danger-soft: #4b2726;
+      --code: #0c1113;
+      --shadow: 0 24px 55px rgba(0, 0, 0, 0.28);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 1.25rem;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 85% -5%, rgba(81, 201, 213, 0.14), transparent 30rem),
+        radial-gradient(circle at 8% 5%, rgba(255, 174, 43, 0.12), transparent 26rem),
+        var(--night);
+      font: 16px/1.68 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    a {
+      color: #7fe4ed;
+      text-underline-offset: 0.18em;
+    }
+
+    a:hover { text-decoration-thickness: 2px; }
+
+    a:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid var(--teal);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    code,
+    pre,
+    kbd {
+      font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+    }
+
+    code {
+      padding: 0.1rem 0.34rem;
+      border: 1px solid var(--line);
+      border-radius: 0.35rem;
+      background: var(--code);
+      color: #ffe0a7;
+      font-size: 0.9em;
+      overflow-wrap: anywhere;
+    }
+
+    pre {
+      margin: 1rem 0;
+      padding: 1rem 1.1rem;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--code);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.025);
+      color: #eaf4f2;
+      line-height: 1.55;
+    }
+
+    pre code {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font-size: 0.88rem;
+    }
+
+    .code-keyword { color: #8bdded; }
+    .code-string { color: #ffd48d; }
+    .code-number { color: #b5dea3; }
+    .code-comment { color: #a8b9b6; }
+
+    kbd {
+      display: inline-block;
+      min-width: 1.8em;
+      padding: 0.12rem 0.38rem;
+      border: 1px solid #6b7f84;
+      border-bottom-width: 3px;
+      border-radius: 5px;
+      background: #263338;
+      color: white;
+      text-align: center;
+      font-size: 0.84em;
+      line-height: 1.2;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(215px, 270px) minmax(0, 1fr);
+      max-width: 1500px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      height: 100vh;
+      padding: 1.5rem 1.15rem;
+      overflow-y: auto;
+      border-right: 1px solid var(--line);
+      background: rgba(16, 20, 22, 0.94);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 0 0 1.2rem;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border: 3px solid var(--amber);
+      border-bottom-width: 5px;
+      border-radius: 5px 5px 2px 2px;
+      background: linear-gradient(135deg, #176675, #0f3f48);
+      box-shadow: 9px 4px 0 -5px var(--night);
+      color: white;
+      font-weight: 800;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 1.08rem;
+      letter-spacing: 0.01em;
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+    }
+
+    nav ul {
+      display: grid;
+      gap: 0.18rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    nav a {
+      display: block;
+      padding: 0.48rem 0.65rem;
+      border-radius: 7px;
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      background: var(--panel);
+      color: white;
+    }
+
+    nav .contents { border: 0; background: transparent; }
+    nav .contents summary { display: none; }
+
+    main {
+      min-width: 0;
+      padding: clamp(1.25rem, 3vw, 3.25rem);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      max-width: 1120px;
+      margin: 0 auto 1.4rem;
+      padding: clamp(1.5rem, 5vw, 4rem);
+      border: 1px solid #4f5e50;
+      border-radius: calc(var(--radius) + 4px);
+      background:
+        linear-gradient(115deg, rgba(255, 174, 43, 0.13), transparent 40%),
+        linear-gradient(300deg, rgba(81, 201, 213, 0.13), transparent 42%),
+        var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: clamp(-3rem, -2vw, -1rem);
+      bottom: -4rem;
+      width: 18rem;
+      height: 18rem;
+      border: 1.5rem solid rgba(255, 174, 43, 0.12);
+      border-radius: 1rem 1rem 0.25rem 0.25rem;
+      transform: perspective(400px) rotateY(-24deg);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      margin: 0 0 0.5rem;
+      color: var(--amber);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.2;
+      text-wrap: balance;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(2.25rem, 6vw, 4.7rem);
+      letter-spacing: -0.045em;
+    }
+
+    h2 {
+      margin: 0 0 0.9rem;
+      font-size: clamp(1.55rem, 3vw, 2.15rem);
+      letter-spacing: -0.025em;
+    }
+
+    h3 {
+      margin: 1.25rem 0 0.55rem;
+      color: #fff1d5;
+      font-size: 1.12rem;
+    }
+
+    p { margin: 0.55rem 0 1rem; }
+
+    .lede {
+      max-width: 790px;
+      color: #d5e1df;
+      font-size: clamp(1.02rem, 2vw, 1.22rem);
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 1.25rem;
+    }
+
+    .badge {
+      padding: 0.34rem 0.66rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(12, 17, 19, 0.55);
+      color: #dfe9e7;
+      font-size: 0.82rem;
+    }
+
+    section {
+      max-width: 1120px;
+      margin: 0 auto 1.25rem;
+      padding: clamp(1.2rem, 3vw, 2rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(27, 37, 41, 0.93);
+      box-shadow: var(--shadow);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.85rem;
+      margin: 1rem 0;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel-raised);
+    }
+
+    .card h3 { margin-top: 0; }
+
+    .card p:last-child,
+    .callout p:last-child {
+      margin-bottom: 0;
+    }
+
+    .callout {
+      margin: 1rem 0;
+      padding: 0.9rem 1rem;
+      border-left: 4px solid var(--teal);
+      border-radius: 5px 10px 10px 5px;
+      background: var(--teal-soft);
+    }
+
+    .callout.warn {
+      border-left-color: var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .callout.danger {
+      border-left-color: var(--danger);
+      background: var(--danger-soft);
+    }
+
+    .callout strong {
+      color: white;
+    }
+
+    ol.steps {
+      margin: 1rem 0;
+      padding: 0;
+      counter-reset: setup;
+      list-style: none;
+    }
+
+    .steps li {
+      position: relative;
+      margin: 0 0 0.75rem;
+      padding: 0.78rem 0.85rem 0.78rem 3.25rem;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--panel-raised);
+    }
+
+    .steps li::before {
+      counter-increment: setup;
+      content: counter(setup);
+      position: absolute;
+      top: 0.72rem;
+      left: 0.8rem;
+      display: grid;
+      width: 1.75rem;
+      height: 1.75rem;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--amber);
+      color: #1e1609;
+      font-weight: 900;
+    }
+
+    table {
+      width: 100%;
+      margin: 1rem 0;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    .table-wrap {
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .table-wrap table { min-width: 530px; }
+
+    .table-wrap:focus-visible {
+      outline: 3px solid var(--teal);
+      outline-offset: 4px;
+    }
+
+    .flow { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero::after { display: none; }
+      .steps li { padding-right: 0.7rem; }
+    }
+
+    th,
+    td {
+      padding: 0.68rem 0.7rem;
+      border: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #25343a;
+      color: #fff3da;
+    }
+
+    td:first-child {
+      color: #e2f2ef;
+      font-weight: 650;
+    }
+
+    .checklist {
+      margin: 0.7rem 0 1rem;
+      padding-left: 1.25rem;
+    }
+
+    .checklist li { margin: 0.34rem 0; }
+    .checklist li::marker { color: var(--green); }
+
+    details {
+      margin: 0.55rem 0;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #192327;
+    }
+
+    summary {
+      padding: 0.75rem 0.9rem;
+      cursor: pointer;
+      color: #fff0d3;
+      font-weight: 700;
+    }
+
+    details > div {
+      padding: 0 0.9rem 0.9rem;
+      color: #d6e1df;
+    }
+
+    .muted { color: var(--muted); }
+
+    .footer {
+      max-width: 1120px;
+      margin: 1.5rem auto 0;
+      padding: 1rem;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.86rem;
+    }
+
+    @media (max-width: 860px) {
+      .shell { display: block; }
+
+      nav {
+        position: static;
+        width: auto;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      nav ul {
+        grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      }
+
+      nav .contents summary { display: block; padding: 0.4rem 0.65rem; }
+    }
+
+    @media print {
+      :root { color-scheme: light; }
+
+      body {
+        color: #172023;
+        background: white;
+      }
+
+      .shell { display: block; }
+      nav { display: none; }
+
+      main { padding: 0; }
+
+      .hero,
+      section {
+        color: #172023;
+        background: white;
+        border-color: #8b999d;
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      h1,
+      h2,
+      h3,
+      .card h3,
+      th,
+      td:first-child {
+        color: #172023;
+      }
+
+      .lede,
+      .muted,
+      .footer {
+        color: #435358;
+      }
+
+      code,
+      pre {
+        color: #172023;
+        background: #f2f5f5;
+        border-color: #aab5b8;
+      }
+
+      .card,
+      .steps li,
+      details,
+      th {
+        background: #f5f7f7;
+      }
+
+      a { color: #135d69; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav aria-label="Guide sections">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">D</span>
+        <span><strong>Door</strong><small>FunByDefault · 1.0</small></span>
+      </div>
+      <details class="contents" open>
+      <summary>Guide contents</summary>
+      <ul>
+        <li><a href="#quick-start">Editor quickstart</a></li>
+        <li><a href="#own-actor">Use your own actor</a></li>
+        <li><a href="#settings">Timing and motion</a></li>
+        <li><a href="#swing">Swing doors</a></li>
+        <li><a href="#slide">Slide doors</a></li>
+        <li><a href="#runtime-api">Blueprint controls</a></li>
+        <li><a href="#events">State events</a></li>
+        <li><a href="#networking">Networking</a></li>
+        <li><a href="#audio">Audio</a></li>
+        <li><a href="#gameplay-tags">Gameplay Tags</a></li>
+        <li><a href="#custom-door">Custom motion</a></li>
+        <li><a href="#included">Included contents</a></li>
+        <li><a href="#troubleshooting">Diagnostics and support</a></li>
+        <li><a href="#migration">Migration</a></li>
+        <li><a href="#boundaries">Scope and compatibility</a></li>
+        <li><a href="#cpp">Optional C++ reference</a></li>
+      </ul>
+      </details>
+    </nav>
+
+    <main>
+      <header class="hero">
+        <p class="eyebrow">FunByDefault · Customer guide</p>
+        <h1>Door 1.0</h1>
+        <p class="lede">Swing and slide door motion you can configure and control in the Unreal Editor and Blueprints. No C++ knowledge is required for setup or integration.</p>
+      </header>
+
+      <section id="quick-start">
+        <h2>Editor and Blueprint quickstart</h2>
+        <p><strong>Prerequisites:</strong> install Door for the engine and platform attached to your download. Start with a Blueprint project and a level where you can see the door.</p>
+        <ol class="steps">
+          <li>Open <strong>Edit &gt; Plugins</strong>, enable <strong>Door</strong>, and restart Unreal if prompted.</li>
+          <li>Open <strong>Window &gt; Place Actors</strong>. Search for <strong>Door Showcase Swing Actor</strong> and drag it into your level. It already contains a root, hinge, panel, and Swing Door component with matching tags.</li>
+          <li>Select the actor. In <strong>Details</strong>, select its <strong>Door Panel</strong> component to replace the mesh or materials. Select <strong>Swing Door</strong> to adjust <strong>Swing Angle</strong>, <strong>Open Time</strong>, and <strong>Close Time</strong>. Keep the default settings for this first test.</li>
+          <li>Keep the actor selected and open the <strong>Level Blueprint</strong> from the Blueprints toolbar menu. Right-click in the graph and choose <strong>Create a Reference</strong> for the selected door. Drag from that reference, add <strong>Get Component by Class</strong>, and set its class to <strong>Swing Door Component</strong>.</li>
+          <li>Drag from the returned component and add <strong>Open Door</strong>. Connect <strong>Event BeginPlay</strong> through a <strong>Delay</strong> of two seconds to <strong>Open Door</strong>. Compile, save, and press <kbd>Play</kbd>.</li>
+        </ol>
+        <p><strong>Expected result:</strong> the panel swings 90 degrees around its hinge over one second. To test closing, connect another Delay and <strong>Close Door</strong> after the opening request.</p>
+        <div class="callout"><strong>Tip:</strong> use <strong>Door Showcase Slide Actor</strong> for a paired sliding door. Its native defaults are Dual mode, Y axis, and 105 cm of travel per panel. Get its <strong>Slide Door Component</strong> in the graph instead.</div>
+        <div class="callout warn"><strong>Multiplayer:</strong> this quickstart is a standalone test. In a networked game, only the server may change a door's state. Follow the <a href="#networking">Blueprint request flow</a> before connecting client input.</div>
+      </section>
+
+      <section id="own-actor">
+        <h2>Add Door to your own actor</h2>
+        <ol class="steps">
+          <li>Open your actor Blueprint. Add a <strong>Swing Door Component</strong> or <strong>Slide Door Component</strong> from the Components panel.</li>
+          <li>Set the moving mesh or hinge to <strong>Movable</strong>. For a swing door, add a Scene Component at the hinge and attach the panel mesh to it. Offset the mesh so its edge meets the hinge.</li>
+          <li>Select the moving component and expand <strong>Tags</strong> in Details. Add the required entry under <strong>Component Tags</strong>: <code>SwingDoor</code> for a swing hinge, <code>SlideDoor</code> for one slider, or <code>DoorLeft</code> and <code>DoorRight</code> on separate dual panels. Actor Tags are a different field.</li>
+          <li>Select the Door component and set its mode, axis, travel, and timing. Each configured tag must identify exactly one scene component. A dual door needs two distinct components.</li>
+          <li>Drag the Door component into your Blueprint graph as a reference. Call <strong>Open Door</strong>, <strong>Close Door</strong>, or <strong>Toggle Door</strong> from your own gameplay. Compile and save the Blueprint, place an instance, and test it.</li>
+        </ol>
+        <p>Use the same component reference for a trigger overlap, a switch, a quest event, or your interaction system. Door supplies motion; your game decides when to request it. Route mouse and keyboard, gamepad, and touch actions through your game's input layer to the same door action.</p>
+        <p>You can also create a Blueprint subclass of either supplied door actor and edit its components. Save the Blueprint and reopen the project to check that your settings and closed layout remain as authored.</p>
+      </section>
+
+      <section id="settings">
+        <h2>Timing and movement</h2>
+        <div class="table-wrap" role="region" aria-label="Timing and movement settings" tabindex="0"><table>
+          <thead><tr><th>Setting</th><th>Effect</th><th>Component default</th></tr></thead>
+          <tbody>
+            <tr><td>Open Time / Close Time</td><td>Seconds for a complete closed-to-open or open-to-closed move. Reversals use only the remaining fraction.</td><td>1 / 1 second</td></tr>
+            <tr><td>Movement Axis</td><td>Slide along the panel parent's local X, Y, or Z. Swing changes Roll for X, Pitch for Y, or Yaw for Z.</td><td>Z</td></tr>
+            <tr><td>Auto Enable Owner Replication</td><td>Enables the owning actor's replication when play begins. The component replicates by default.</td><td>On</td></tr>
+            <tr><td>Warn When Called Without Authority</td><td>Reports rejected client actions in non-Shipping builds.</td><td>On</td></tr>
+          </tbody>
+        </table></div>
+        <p>Motion is linear. Use <strong>Set Door Open Immediate</strong> for an instant endpoint. Invalid runtime durations fall back to a minimum of 0.01 seconds; use finite values of at least 0.01 seconds for animated motion.</p>
+        <div class="callout"><strong>Note:</strong> the settings above are component defaults. The supplied slide actor starts in Dual mode with Y movement and 105 cm travel. Your saved Blueprint or placed actor can override these values.</div>
+      </section>
+
+      <section id="swing">
+        <h2>Configure a swing door</h2>
+        <p><strong>Swing Component Tag</strong> identifies the panel or hinge that rotates. It defaults to <code>SwingDoor</code>. Place that component at the hinge edge; Door uses its authored pivot and does not infer a hinge.</p>
+        <p><strong>Swing Angle</strong> is the rotation from closed to fully open, in degrees. The component default is 90 degrees. A negative angle reverses direction. Choose Z for the usual vertical hinge.</p>
+        <p>The supplied swing actor tags its <strong>Swing Hinge</strong> and attaches <strong>Door Panel</strong> below it. Move the hinge to the desired edge, then move or resize the child panel relative to the hinge. Tag the hinge only, so the target stays unique.</p>
+        <div class="callout"><strong>Changing the layout during play:</strong> fully close the door, change its hinge layout, angle, axis, or tag, then call <strong>Refresh Swing Target From Current Layout</strong>. The current relative rotation becomes the new closed rotation. A refresh while open or moving is ignored.</div>
+      </section>
+
+      <section id="slide">
+        <h2>Configure a slide door</h2>
+        <div class="grid">
+          <article class="card"><h3>Single</h3><p>Set <strong>Slide Mode</strong> to Single. Give one panel the <code>SlideDoor</code> Component Tag. Door adds the signed <strong>Slide Distance</strong> along the selected local axis.</p></article>
+          <article class="card"><h3>Dual</h3><p>Set <strong>Slide Mode</strong> to Dual. Tag separate panels <code>DoorLeft</code> and <code>DoorRight</code>. Positive distance moves the left panel against the axis and the right panel along it.</p></article>
+        </div>
+        <p>The component defaults to Single mode and 200 cm travel. Details accepts distances from -1000 to 1000 cm. Reverse the sign to reverse a single panel or swap dual directions. Zero leaves the panels in place.</p>
+        <p>For Single mode on the supplied slide actor, select its <strong>Slide Door</strong> component and change the mode to Single. Its left panel already has <code>SlideDoor</code>. The right mesh stops moving; hide it or repurpose it as a fixed track. If you hide it only during play, also disable its collision when it should not block the doorway.</p>
+        <h3>Hide at the open endpoint</h3>
+        <p><strong>Hide Slide Components When Fully Open</strong> is off by default. When enabled, the resolved panels and their attached scene components hide at the fully open endpoint. Closing restores each component's captured <strong>Visible</strong> and <strong>Hidden In Game</strong> flags. Hiding does not disable collision.</p>
+        <p>Use <strong>Set Hide Slide Components When Fully Open</strong> when changing this option during play. Disabling it restores the captured visibility immediately.</p>
+        <div class="callout"><strong>Changing the layout during play:</strong> fully close the door, create or move its panels into their intended closed layout, then call <strong>Refresh Slide Targets From Current Layout</strong>. This captures locations and visibility again. Refreshes while open or moving are ignored.</div>
+      </section>
+
+      <section id="runtime-api">
+        <h2>Blueprint controls and queries</h2>
+        <div class="table-wrap" role="region" aria-label="Blueprint controls" tabindex="0"><table>
+          <thead><tr><th>Node</th><th>Behavior</th></tr></thead>
+          <tbody>
+            <tr><td>Open Door</td><td>Starts opening or reverses a closing door. A request while already Open or Opening has no effect.</td></tr>
+            <tr><td>Close Door</td><td>Starts closing or reverses an opening door. A request while already Closed or Closing has no effect.</td></tr>
+            <tr><td>Toggle Door</td><td>Opens from Closed or Closing; closes from Open or Opening.</td></tr>
+            <tr><td>Set Door Open Immediate</td><td>Snaps to Open or Closed. Open selects the endpoint. Broadcast Local Change controls this instance's event and audio.</td></tr>
+            <tr><td>Is Door Open / Is Door Closed</td><td>Checks the stable endpoint state.</td></tr>
+            <tr><td>Is Door Operating</td><td>Checks Opening or Closing. A client may wait in this state at the visual endpoint until the server's final update arrives.</td></tr>
+            <tr><td>Get Door Open Alpha</td><td>Returns the local open amount: 0 is closed, 1 is open, and intermediate values are partial movement.</td></tr>
+          </tbody>
+        </table></div>
+        <p>The normal sequence is <code>Closed → Opening → Open → Closing → Closed</code>. A reversal starts from the current open amount. A half-open door with a one-second full close time takes about half a second to close.</p>
+        <p>For startup or saved-state restoration, call <strong>Set Door Open Immediate</strong> after the target components are ready. Set <strong>Broadcast Local Change</strong> to false when this instance should skip the transition event and audio. Remote clients that receive a changed replicated state still process their normal event and audio.</p>
+        <div class="callout warn"><strong>Use the control nodes:</strong> writing state or alpha separately does not synchronize the motion, visuals, and network state. Use the immediate node to reset, and the open or close nodes to animate.</div>
+      </section>
+
+      <section id="events">
+        <h2>React to a state change</h2>
+        <ol class="steps">
+          <li>Drag your Door component reference into the graph and add <strong>Bind Event to On Door State Changed</strong>.</li>
+          <li>Create the matching event with <strong>Previous State</strong> and <strong>New State</strong> inputs.</li>
+          <li>Use <strong>New State</strong> to branch for your response, such as updating a light, playing your own effect, or scheduling a close request.</li>
+        </ol>
+        <p>Door updates its state, open amount, motion status, and visuals before broadcasting the event. Before handlers run for Open, the panel is at the open endpoint and <strong>Is Door Operating</strong> is false on that instance.</p>
+        <p>A server-side handler can call Open Door, Close Door, or Set Door Open Immediate to start the next action. Door keeps that new action instead of overwriting it after the callback returns.</p>
+        <div class="callout"><strong>Note:</strong> event inputs describe the transition that triggered the callback. If another handler has already requested a later action, a query may return a newer state. Use Previous State and New State to identify the event you are handling. Avoid creating an endless chain of immediate state changes.</div>
+        <p>Clients receive local events when replicated state changes arrive. Very short or rapidly reversed transitions can be skipped between network updates. Use a separate replicated gameplay event if your game must deliver every intermediate action.</p>
+      </section>
+
+      <section id="networking">
+        <h2>Networking and authority</h2>
+        <p>The server controls door state. The component replicates a motion description: state, start time, duration, starting open amount, and target open amount. Clients apply the panel transforms locally using server world time.</p>
+        <p>The component replicates by default. Both supplied door actors have replication enabled. On your own actor, leave <strong>Auto Enable Owner Replication</strong> enabled, or enable <strong>Replicates</strong> in its Blueprint Class Defaults. Keep door actors relevant to the clients that need to see them.</p>
+        <h3>Blueprint client request flow</h3>
+        <ol class="steps">
+          <li>In your player-owned Character or Player Controller Blueprint, create a Custom Event such as <strong>Request Door Open</strong>. Add a door actor input. Set <strong>Replicates</strong> to <strong>Run on Server</strong>, and enable Reliable for an occasional interaction request.</li>
+          <li>Call that event from your local input or interaction logic. Use the same flow for mouse and keyboard, gamepad, and touch.</li>
+          <li>On the server, validate the request using your game's rules: actor validity, distance, access, and any line-of-sight requirement.</li>
+          <li>After validation, get the target's Swing or Slide Door component and call <strong>Open Door</strong>, <strong>Close Door</strong>, or <strong>Toggle Door</strong>. Other clients receive the resulting motion state.</li>
+        </ol>
+        <pre class="flow"><code>Local interaction
+    → Run on Server event on the player's owned actor
+    → Server validates the target and access
+    → Door component action
+    → Replicated motion on relevant clients</code></pre>
+        <div class="callout warn"><strong>Ownership matters:</strong> a shared world door is usually not owned by the client. Put the request event on the player's owned actor. Calling a door control directly on a client is rejected; Door does not provide the request RPC or authorize an interactor.</div>
+        <h3>Configuration must match</h3>
+        <p>Tags, mode, distance, angle, audio, visibility policy, and target layout are configuration, not replicated Door state. Author matching settings on all instances. If you change them during play, your game must distribute the configuration and apply it everywhere before refreshing the fully closed layout.</p>
+        <p>Clients can reconstruct an in-progress operation from its timing when it becomes relevant. Dedicated servers skip audio. These implementation paths do not establish acceptance for every network setup.</p>
+        <div class="callout warn"><strong>Verification status:</strong> release-specific multiplayer acceptance is still pending for this staged guide. Listen-server and dedicated-server modes, late join, reconnect, ownership changes, and latency or packet-loss behavior need exact-package verification before a support claim is published.</div>
+      </section>
+
+      <section id="audio">
+        <h2>Assign optional audio</h2>
+        <p>Select the Door component and expand <strong>Door Sound Settings</strong>. Empty slots are silent. Assign your own compatible Unreal sound assets.</p>
+        <div class="table-wrap" role="region" aria-label="Audio slots" tabindex="0"><table>
+          <thead><tr><th>Slot</th><th>When it plays</th></tr></thead>
+          <tbody>
+            <tr><td>Trigger Sound / Opening Start Sound</td><td>The state changes to Opening. If both are assigned, both play.</td></tr>
+            <tr><td>Opening Loop Sound</td><td>While opening. Choose an asset configured to loop.</td></tr>
+            <tr><td>Fully Open Sound</td><td>The state changes to Open.</td></tr>
+            <tr><td>Closing Start Sound</td><td>The state changes to Closing.</td></tr>
+            <tr><td>Closing Loop Sound</td><td>While closing. Choose an asset configured to loop.</td></tr>
+            <tr><td>Fully Closed Sound</td><td>The state changes to Closed.</td></tr>
+          </tbody>
+        </table></div>
+        <p>Movement loops stop when motion finishes, reverses, or the component ends play. Audio attaches to the resolved panel or hinge when available, otherwise to the owner's root. Dedicated servers create no Door audio. Door supplies sound hooks and includes no audio assets.</p>
+      </section>
+
+      <section id="gameplay-tags">
+        <h2>Expose Gameplay Tags</h2>
+        <p>Select the Door component and expand <strong>Gameplay Tag Settings</strong>. Choose your project's Static Tags and optional Closed, Opening, Open, and Closing tags. Call <strong>Get Door Gameplay Tags</strong> to collect the static tags plus the tag for the current state.</p>
+        <p>These are Gameplay Tags used to query state. They are separate from the Component Tags that identify moving panels. Door does not register a required Gameplay Tag hierarchy, add tags to an ability system, or require GameplayAbilities.</p>
+      </section>
+
+      <section id="custom-door">
+        <h2>Create custom motion in Blueprint</h2>
+        <ol class="steps">
+          <li>Create a Blueprint class. Under <strong>All Classes</strong>, choose <strong>Door Component Base</strong> as the parent.</li>
+          <li>Implement the <strong>Apply Door Open Alpha</strong> event. Its Open Alpha input runs from 0, fully closed, to 1, fully open.</li>
+          <li>Use the alpha to drive your own scene-component transforms or material parameters. You can remap it for eased motion.</li>
+          <li>Add that component Blueprint to your actor and use the same door control nodes.</li>
+        </ol>
+        <p>Door already owns timing and reversal, so avoid starting another Timeline for each alpha update. The base component has no built-in panel movement until you implement this event. Built-in Swing and Slide components use their own native motion.</p>
+      </section>
+
+      <section id="included">
+        <h2>Included contents</h2>
+        <ul class="checklist">
+          <li><strong>Door Component Base:</strong> shared timing, states, networking, audio hooks, events, and Gameplay Tag queries.</li>
+          <li><strong>Swing Door Component:</strong> rotation of one tagged panel or hinge.</li>
+          <li><strong>Slide Door Component:</strong> single or paired panel movement and optional open-endpoint hiding.</li>
+          <li><strong>Door Showcase Swing Actor</strong> and <strong>Door Showcase Slide Actor:</strong> editable native starting points for your own door Blueprints.</li>
+          <li><strong>Door Example Game Mode:</strong> a timer-driven harness that discovers Door components and toggles them on the server.</li>
+          <li><strong>DoorShowcase:</strong> the plugin-owned example map at <code>/Door/Maps/DoorShowcase</code>.</li>
+          <li><strong>Full native source:</strong> optional inspection and extension.</li>
+        </ul>
+        <p>The motion components tick only while Opening or Closing and resolve targets when play begins or a refresh is requested. The native door actors and example Game Mode have no actor Tick.</p>
+      </section>
+
+      <section id="troubleshooting">
+        <h2>Diagnostics and troubleshooting</h2>
+        <p>During Play In Editor, inspect the Door component's <strong>Door State</strong>, <strong>Current Open Alpha</strong>, and resolved Swing or Slide targets in Details. Open <strong>Window &gt; Developer Tools &gt; Output Log</strong> and filter for <code>LogDoor</code> or your actor's name.</p>
+        <details open><summary>The door will not open</summary><div>Check that the moving mesh or hinge is Movable. Check Component Tags on scene components, not Actor Tags. Each configured tag must match exactly one component; dual panels must be distinct. Missing, duplicate, or overlapping targets produce a warning and reject opening. Fix the tags, reset fully closed, and call the matching refresh node.</div></details>
+        <details><summary>The state changes but the panel stays still</summary><div>Check the resolved target, axis, and travel. Zero distance or angle leaves the panel in place. In a custom Door Component Base Blueprint, implement Apply Door Open Alpha. A component with no custom visual implementation still updates its state.</div></details>
+        <details><summary>The swing panel rotates around its center</summary><div>Use a hinge Scene Component and attach the panel below it with an offset. Tag the hinge only. The supplied swing actor already has this structure.</div></details>
+        <details><summary>A client action is ignored</summary><div>Route the request through a Run on Server event on the player's owned actor, validate it there, and call the Door component on the server. Client-authority warnings can be enabled in non-Shipping builds; they are compiled out in Shipping.</div></details>
+        <details><summary>Different clients show different motion</summary><div>Check actor replication and relevance, then compare mode, axis, angle, distance, tags, and closed layout on every instance. Door replicates motion state, not runtime configuration. Test a server request rather than a direct client call.</div></details>
+        <details><summary>A changed panel moves from its old layout</summary><div>Fully close the door before replacing or moving panels. Rebuild them in their closed layout and call Refresh Swing Target From Current Layout or Refresh Slide Targets From Current Layout. A refresh while open or moving is ignored.</div></details>
+        <details><summary>An open hidden slider still blocks the doorway</summary><div>The hide option changes visibility only. Adjust your panel collision or have your gameplay change collision when that is required. Door has no obstruction solver.</div></details>
+        <details><summary>A panel's authored visibility is not restored</summary><div>Close the door, set the intended Visible and Hidden In Game flags on the panel and its children, and refresh the slide targets. At runtime, use the hide-option setter so disabling it restores captured flags immediately.</div></details>
+        <details><summary>A callback starts the next motion unexpectedly</summary><div>Check every On Door State Changed handler. Event inputs identify the original transition, while state queries may reflect an action requested by an earlier handler. Filter by New State and avoid unbounded immediate open/close callbacks.</div></details>
+        <details><summary>A movement loop keeps playing</summary><div>Door stops its own loop at endpoints, reversals, and EndPlay. Check that another gameplay system is not starting the same sound. Assign a looping-capable asset to loop slots.</div></details>
+        <details><summary>Gameplay Tags are empty</summary><div>Choose Static and state tags in Gameplay Tag Settings. Component Tags used for panel targeting do not become Gameplay Tags automatically.</div></details>
+        <h3>Contact support</h3>
+        <p>Email <a href="mailto:funbydefault.dev@gmail.com">funbydefault.dev@gmail.com</a> with your Door and Unreal versions, platform, network mode, component settings, expected result, reproduction steps, and relevant Output Log lines. Include a small Blueprint example when useful. Remove private project data before sharing it.</p>
+      </section>
+
+      <section id="migration">
+        <h2>Migration</h2>
+        <h3>Existing components and panel tags</h3>
+        <p>The reflected swing and slide class, enum, property, and control names are retained. Earlier internal builds could choose the first component when tags were ambiguous. Door now rejects ambiguous targets. Audit existing actors so each configured tag identifies exactly one component and dual panels are distinct, then refresh the closed layout and retest.</p>
+        <h3>Example map path</h3>
+        <p>The map has moved from <code>/Door/Maps/DoorExample</code> to <code>/Door/Maps/DoorShowcase</code>. The plugin supplies package and object redirects for the old map and its built-data paths. Use the new path for new references; verify existing references after upgrading.</p>
+        <h3>Restore state through the API</h3>
+        <p>Use <strong>Set Door Open Immediate</strong> rather than assigning DoorState or CurrentOpenAlpha independently. Version 1.0 has no plugin-owned SaveGame format. Your project decides what to save and restores that state through the control node on the server.</p>
+        <h3>Older native subclasses</h3>
+        <p>If a source subclass uses the early <code>UpdateDoorOperation</code> hook, move its transform logic to <code>ApplyDoorOpenAlpha</code>. Door owns normalized timing, reversal, endpoints, and replicated state.</p>
+        <h3>Public API policy</h3>
+        <p>Public Blueprint names, C++ symbols, serialized enum and property names, and config keys are compatibility surfaces. A public symbol is deprecated for at least one published release before removal, with guidance and redirects where needed. Future save-data or config-schema changes require a versioned migration path and regression coverage.</p>
+      </section>
+
+      <section id="boundaries">
+        <h2>Scope and compatibility</h2>
+        <p>Door supplies swing, single-slide, and dual-slide motion; endpoint controls; state events and queries; optional sound hooks; Gameplay Tag exposure; and server-controlled replicated motion state.</p>
+        <p>Your game supplies input mappings, interaction UI, locks and access rules, client request RPCs, prediction, save persistence, and any navigation or obstruction policy. Door uses transform animation rather than a physics hinge. It includes no audio assets or complete interaction framework.</p>
+        <div class="callout warn"><strong>Compatibility status:</strong> this is a staged release guide. The current supported engine and platform matrix has not yet been certified for publication. Use only combinations verified for the exact release and attached to its Fab download; this guide does not establish an untested compatibility claim.</div>
+      </section>
+
+      <section id="cpp">
+        <h2>Optional C++ reference</h2>
+        <p>The editor and Blueprint paths above are sufficient for setup and gameplay integration. Use this reference only when extending native code.</p>
+        <h3>Module and component</h3>
+        <p>Add <code>Door</code> to your module dependencies and include the component header you use.</p>
+        <pre><code><span class="code-keyword">#include</span> <span class="code-string">"SlideDoorComponent.h"</span>
+
+SlideDoor = CreateDefaultSubobject&lt;USlideDoorComponent&gt;(TEXT(<span class="code-string">"SlideDoor"</span>));
+SlideDoor-&gt;SlideMode = ESlideDoorMode::Dual;
+SlideDoor-&gt;MovementAxis = EDoorMovementAxis::Y;
+SlideDoor-&gt;SlideDistance = <span class="code-number">160.0f</span>;
+SlideDoor-&gt;OpenTime = <span class="code-number">0.8f</span>;
+SlideDoor-&gt;CloseTime = <span class="code-number">1.0f</span>;</code></pre>
+        <p>Add movable scene components with unique <code>DoorLeft</code> and <code>DoorRight</code> tags. Call controls from server-authoritative gameplay.</p>
+        <h3>Replace generated panels</h3>
+        <pre><code>SlideDoor-&gt;SetDoorOpenImmediate(<span class="code-keyword">false</span>, <span class="code-keyword">false</span>);
+<span class="code-comment">// Place replacement panels in their closed layout.</span>
+SlideDoor-&gt;RefreshSlideTargetsFromCurrentLayout();</code></pre>
+        <h3>Native custom motion</h3>
+        <p>Derive from <code>UDoorComponentBase</code> and override <code>ApplyDoorOpenAlpha(float OpenAlpha)</code>. For tag queries, use <code>GetOwnedGameplayTags</code>. For callbacks, bind a reflected handler with the signature <code>void HandleDoorStateChanged(EDoorState PreviousState, EDoorState NewState)</code> to <code>OnDoorStateChanged</code>.</p>
+      </section>
+
+      <p class="footer">Door 1.0 · FunByDefault</p>
+    </main>
+  </div>
+  <script>
+    const compactGuide = window.matchMedia("(max-width: 860px)");
+    const guideContents = document.querySelector("nav .contents");
+    function fitGuideContents() { guideContents.open = !compactGuide.matches; }
+    fitGuideContents();
+    compactGuide.addEventListener("change", fitGuideContents);
+  </script>
+</body>
+</html>
